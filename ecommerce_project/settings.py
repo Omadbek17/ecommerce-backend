@@ -145,11 +145,16 @@ AUTH_USER_MODEL = 'accounts.User'
 # Production settings
 import os
 
-if 'RAILWAY_ENVIRONMENT' in os.environ:
+if 'RENDER' in os.environ:
     DEBUG = False
     
-    # Allowed hosts
-    ALLOWED_HOSTS = ['*']
+    # Allowed hosts - Render hostname ni qo'shish
+    ALLOWED_HOSTS = [
+        'ecommerce-api-qkqg.onrender.com',
+        'localhost',
+        '127.0.0.1',
+        '.onrender.com'  # Barcha onrender.com subdomain lari uchun
+    ]
     
     # Database
     import dj_database_url
@@ -163,4 +168,4 @@ if 'RAILWAY_ENVIRONMENT' in os.environ:
         "https://localhost:3000",
         "https://127.0.0.1:3000", 
     ]
-    CORS_ALLOW_ALL_ORIGINS = True  # Development uchun
+    CORS_ALLOW_ALL_ORIGINS = True
