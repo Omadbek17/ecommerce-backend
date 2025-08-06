@@ -1,0 +1,1 @@
+web: gunicorn ecommerce_project.wsgi --host 0.0.0.0 --port $PORT

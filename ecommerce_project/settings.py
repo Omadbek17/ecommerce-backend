@@ -140,3 +140,27 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.User'
+
+
+# Production settings
+import os
+
+if 'RAILWAY_ENVIRONMENT' in os.environ:
+    DEBUG = False
+    
+    # Allowed hosts
+    ALLOWED_HOSTS = ['*']
+    
+    # Database
+    import dj_database_url
+    DATABASES['default'] = dj_database_url.parse(os.environ['DATABASE_URL'])
+    
+    # Static files
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    
+    # CORS for production
+    CORS_ALLOWED_ORIGINS = [
+        "https://localhost:3000",
+        "https://127.0.0.1:3000", 
+    ]
+    CORS_ALLOW_ALL_ORIGINS = True  # Development uchun
