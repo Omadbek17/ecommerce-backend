@@ -144,30 +144,29 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.User'
 
-# Production settings
-import os
-
-if 'RENDER' in os.environ:
+# Vercel deployment settings
+if 'VERCEL' in os.environ:
     DEBUG = False
     
-    # Allowed hosts - Render hostname ni qo'shish
+    # Allowed hosts
     ALLOWED_HOSTS = [
-        'ecommerce-api-qkqg.onrender.com',
+        '.vercel.app',
         'localhost',
-        '127.0.0.1',
-        '.onrender.com'  # Barcha onrender.com subdomain lari uchun
+        '127.0.0.1'
     ]
     
     # Database
-    import dj_database_url
-    DATABASES['default'] = dj_database_url.parse(os.environ['DATABASE_URL'])
+    if 'DATABASE_URL' in os.environ:
+        import dj_database_url
+        DATABASES['default'] = dj_database_url.parse(os.environ['DATABASE_URL'])
     
     # Static files
+    STATIC_URL = '/static/'
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     
     # CORS for production
     CORS_ALLOWED_ORIGINS = [
         "https://localhost:3000",
-        "https://127.0.0.1:3000", 
+        "https://127.0.0.1:3000",
     ]
     CORS_ALLOW_ALL_ORIGINS = True
