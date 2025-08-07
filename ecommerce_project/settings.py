@@ -10,7 +10,8 @@ SECRET_KEY = 'django-insecure-your-secret-key-here-change-this-in-production'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+# NGROK va local development uchun
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
@@ -126,11 +127,13 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# CORS Settings
+# CORS Settings - ngrok uchun ham qo'shish
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # React frontend uchun
     "http://127.0.0.1:3000",
+    "https://376bf220df09.ngrok-free.app",  # ngrok uchun
 ]
+CORS_ALLOW_ALL_ORIGINS = True  # Development uchun
 
 # Phone number field settings
 PHONENUMBER_DEFAULT_REGION = 'UZ'
@@ -140,7 +143,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.User'
-
 
 # Production settings
 import os
