@@ -1,19 +1,21 @@
 import os
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-your-secret-key-here-change-this-in-production'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Production uchun DEBUG = False qilish shart
+DEBUG = False
 
-# NGROK va local development uchun
-ALLOWED_HOSTS = ['*']
+# PythonAnywhere domain + local development
+ALLOWED_HOSTS = [
+    'qosimov.pythonanywhere.com',  # PythonAnywhere domening
+    '127.0.0.1',
+    'localhost'
+]
 
-# Application definition
+# Apps
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -22,15 +24,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework.authtoken',
-    'django_filters',  # Django Filter for advanced filtering capabilities
-    
-    # Third party apps
+    'django_filters',
     'rest_framework',
     'corsheaders',
     'drf_spectacular',
     'phonenumber_field',
-    
-    # Local apps
     'accounts',
     'categories',
     'products',
@@ -68,7 +66,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ecommerce_project.wsgi.application'
 
-# Database
+# Database (SQLite ishlatsa bo‘ladi, keyinchalik MySQL/Postgres o‘tkazish mumkin)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -76,23 +74,14 @@ DATABASES = {
     }
 }
 
-# Password validation
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# REST Framework Settings
+# REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
@@ -106,7 +95,7 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
-# Swagger/OpenAPI Settings
+# Swagger
 SPECTACULAR_SETTINGS = {
     'TITLE': 'E-commerce API',
     'DESCRIPTION': 'API documentation for E-commerce platform',
@@ -114,60 +103,30 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
 }
 
-# Internationalization
+# Language & Time
 LANGUAGE_CODE = 'uz-uz'
 TIME_ZONE = 'Asia/Tashkent'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
+# Static files
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Media files (User uploaded files)
+# Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# CORS Settings - ngrok uchun ham qo'shish
+# CORS (Production)
+CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # React frontend uchun
+    "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "https://376bf220df09.ngrok-free.app",  # ngrok uchun
+    f"https://{ALLOWED_HOSTS[0]}",  # PythonAnywhere domen
 ]
-CORS_ALLOW_ALL_ORIGINS = True  # Development uchun
 
-# Phone number field settings
 PHONENUMBER_DEFAULT_REGION = 'UZ'
 
-# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Custom User Model
 AUTH_USER_MODEL = 'accounts.User'
-
-# Vercel deployment settings
-if 'VERCEL' in os.environ:
-    DEBUG = False
-    
-    # Allowed hosts
-    ALLOWED_HOSTS = [
-        '.vercel.app',
-        'localhost',
-        '127.0.0.1'
-    ]
-    
-    # Database
-    if 'DATABASE_URL' in os.environ:
-        import dj_database_url
-        DATABASES['default'] = dj_database_url.parse(os.environ['DATABASE_URL'])
-    
-    # Static files
-    STATIC_URL = '/static/'
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-    
-    # CORS for production
-    CORS_ALLOWED_ORIGINS = [
-        "https://localhost:3000",
-        "https://127.0.0.1:3000",
-    ]
-    CORS_ALLOW_ALL_ORIGINS = True
