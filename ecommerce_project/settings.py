@@ -1,16 +1,21 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# .env fayldan o‘qish
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-your-secret-key-here-change-this-in-production'
+# Xavfsizlik
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-change-this')
 
-# Production uchun DEBUG = False qilish shart
-DEBUG = False
+# Production’da DEBUG = False qilish shart
+DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
-# PythonAnywhere domain + local development
+# Ruxsat etilgan domenlar
 ALLOWED_HOSTS = [
-    'qosimov.pythonanywhere.com',  # PythonAnywhere domening
+    'qosimov.pythonanywhere.com',  # PythonAnywhere domen
     '127.0.0.1',
     'localhost'
 ]
@@ -66,7 +71,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ecommerce_project.wsgi.application'
 
-# Database (SQLite ishlatsa bo‘ladi, keyinchalik MySQL/Postgres o‘tkazish mumkin)
+# Database (SQLite — keyin Postgres/MySQL o‘tkazish mumkin)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -103,26 +108,26 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
 }
 
-# Language & Time
-LANGUAGE_CODE = 'uz-uz'
+# Til va vaqt
+LANGUAGE_CODE = 'uz'  # Django uchun tavsiya etilgan format
 TIME_ZONE = 'Asia/Tashkent'
 USE_I18N = True
 USE_TZ = True
 
-# Static files
+# Statik fayllar
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Media files
+# Media fayllar
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# CORS (Production)
+# CORS
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    f"https://{ALLOWED_HOSTS[0]}",  # PythonAnywhere domen
+    f"https://{ALLOWED_HOSTS[0]}",
 ]
 
 PHONENUMBER_DEFAULT_REGION = 'UZ'
