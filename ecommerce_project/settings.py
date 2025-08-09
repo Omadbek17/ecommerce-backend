@@ -1,26 +1,18 @@
 import os
 from pathlib import Path
-from dotenv import load_dotenv
-
-# .env fayldan o‘qish
-load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Xavfsizlik
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-change-this')
+SECRET_KEY = 'django-insecure-your-secret-key-here'
 
-# Production’da DEBUG = False qilish shart
-DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
+DEBUG = False  # Production uchun
 
-# Ruxsat etilgan domenlar
 ALLOWED_HOSTS = [
-    'qosimov.pythonanywhere.com',  # PythonAnywhere domen
+    'qosimov.pythonanywhere.com',
     '127.0.0.1',
     'localhost'
 ]
 
-# Apps
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -71,7 +63,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ecommerce_project.wsgi.application'
 
-# Database (SQLite — keyin Postgres/MySQL o‘tkazish mumkin)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -86,7 +77,6 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
@@ -100,7 +90,6 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
-# Swagger
 SPECTACULAR_SETTINGS = {
     'TITLE': 'E-commerce API',
     'DESCRIPTION': 'API documentation for E-commerce platform',
@@ -108,21 +97,17 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
 }
 
-# Til va vaqt
-LANGUAGE_CODE = 'uz'  # Django uchun tavsiya etilgan format
+LANGUAGE_CODE = 'uz'
 TIME_ZONE = 'Asia/Tashkent'
 USE_I18N = True
 USE_TZ = True
 
-# Statik fayllar
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Media fayllar
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# CORS
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
