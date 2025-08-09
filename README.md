@@ -3,7 +3,12 @@
 Django REST API for E-commerce platform with location support.
 
 ## 🚀 Features
+## Setup
 
+1. `.env.example` faylni `.env` ga nusxalang:
+   ```bash
+   cp .env.example .env
+   
 ✅ **Authentication System:**
 - User registration with phone number (+998 format)
 - Token-based authentication  

@@ -1,35 +1,54 @@
 # Django
-*.log
-*.pot
 *.pyc
 __pycache__/
-local_settings.py
 db.sqlite3
 db.sqlite3-journal
-
-# Media files
 media/
-
-# Static files
-staticfiles/
 static/
+*.log
 
-# Virtual environment
-venv/
+# Environments
+.env
+.venv
 env/
+venv/
 ENV/
+env.bak/
+venv.bak/
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
 
-# OS
+# OS files
 .DS_Store
 Thumbs.db
 
-# Environment variables
-.env
+# Python
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Secret files
+secrets.json
 .env.local
 .env.production
