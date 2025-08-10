@@ -12,14 +12,13 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
     seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name='products')
     
-    # Stock management
-    stock_quantity = models.PositiveIntegerField(default=0)
-    min_stock_level = models.PositiveIntegerField(default=5)
+    # SODDA OMBOR - faqat bor yoki yo'q
+    in_stock = models.BooleanField(default=True, verbose_name="Omborda bormi")
     
     # Product details
     brand = models.CharField(max_length=100, blank=True)
-    weight = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, help_text="Weight in kg")
-    dimensions = models.CharField(max_length=100, blank=True, help_text="Length x Width x Height")
+    weight = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, help_text="Og'irligi (kg)")
+    dimensions = models.CharField(max_length=100, blank=True, help_text="Uzunlik x Kenglik x Balandlik")
     color = models.CharField(max_length=50, blank=True)
     material = models.CharField(max_length=100, blank=True)
     
@@ -33,17 +32,11 @@ class Product(models.Model):
     
     class Meta:
         ordering = ['-created_at']
+        verbose_name = 'Mahsulot'
+        verbose_name_plural = 'Mahsulotlar'
     
     def __str__(self):
         return f"{self.title} - {self.seller_code}"
-    
-    @property
-    def is_in_stock(self):
-        return self.stock_quantity > 0
-    
-    @property
-    def is_low_stock(self):
-        return self.stock_quantity <= self.min_stock_level
 
 
 class ProductImage(models.Model):
@@ -58,7 +51,7 @@ class ProductImage(models.Model):
         ordering = ['order', 'created_at']
     
     def __str__(self):
-        return f"{self.product.title} - Image {self.order}"
+        return f"{self.product.title} - Rasm {self.order}"
 
 
 class ProductSpecification(models.Model):
