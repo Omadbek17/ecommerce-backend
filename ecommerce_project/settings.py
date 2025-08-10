@@ -1,20 +1,28 @@
 import os
 from pathlib import Path
 
+# PyMySQL for PythonAnywhere (agar kerak bo'lsa)
+try:
+    import pymysql
+    pymysql.install_as_MySQLdb()
+except:
+    pass
+
 # Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# Development uchun oddiy SECRET_KEY, production'da .env'dan olinadi
 try:
     from decouple import config, Csv
     SECRET_KEY = config('SECRET_KEY')
     DEBUG = config('DEBUG', default=False, cast=bool)
+    MYSQL_PASSWORD = config('MYSQL_PASSWORD')  # Parol .env dan olinadi!
     PYTHONANYWHERE_USERNAME = config('PYTHONANYWHERE_USERNAME', default='user027')
 except:
-    # Agar python-decouple o'rnatilmagan bo'lsa
+    # Faqat local development uchun
     SECRET_KEY = 'django-insecure-development-key-change-in-production'
     DEBUG = True
+    MYSQL_PASSWORD = 'local_password'  # Local uchun
     PYTHONANYWHERE_USERNAME = 'user027'
 
 # Hosts configuration
@@ -81,13 +89,30 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ecommerce_project.wsgi.application'
 
-# Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Database configuration
+if DEBUG:
+    # Local development - SQLite
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    # Production - MySQL on PythonAnywhere
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'user027$ecommerce',
+            'USER': 'user027',
+            'PASSWORD': MYSQL_PASSWORD,  # .env fayldan olinadi
+            'HOST': 'user027.mysql.pythonanywhere-services.com',
+            'PORT': '3306',
+            'OPTIONS': {
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            }
+        }
+    }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
