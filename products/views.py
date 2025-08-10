@@ -1,3 +1,4 @@
+# products/views.py
 from rest_framework import viewsets, permissions, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -6,7 +7,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .models import Product, ProductImage, ProductSpecification
 from .serializers import (
     ProductListSerializer, ProductDetailSerializer, 
-    ProductImageSerializer, ProductSpecificationSerializer
+    ProductImageSerializer, ProductSpecificationSerializer,
+    ProductCreateUpdateSerializer
 )
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
@@ -31,6 +33,7 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         'category__parent': ['exact'],
         'price': ['gte', 'lte', 'exact'],
         'is_featured': ['exact'],
+        'in_stock': ['exact'],  # in_stock filter
         'brand': ['exact', 'icontains'],
     }
     
@@ -69,9 +72,12 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         if max_price:
             queryset = queryset.filter(price__lte=max_price)
         
-        # Stock filter
-        if in_stock and in_stock.lower() == 'true':
-            queryset = queryset.filter(stock_quantity__gt=0)
+        # Stock filter - SODDALASHTIRILGAN
+        if in_stock is not None:
+            if in_stock.lower() == 'true':
+                queryset = queryset.filter(in_stock=True)
+            elif in_stock.lower() == 'false':
+                queryset = queryset.filter(in_stock=False)
         
         # Featured filter
         if featured and featured.lower() == 'true':
@@ -98,6 +104,28 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         """Get popular products (by views or sales - for now just featured)"""
         popular_products = self.get_queryset().filter(is_featured=True).order_by('?')[:15]
         serializer = ProductListSerializer(popular_products, many=True, context={'request': request})
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def in_stock(self, request):
+        """Get only in-stock products"""
+        in_stock_products = self.get_queryset().filter(in_stock=True)
+        page = self.paginate_queryset(in_stock_products)
+        if page is not None:
+            serializer = ProductListSerializer(page, many=True, context={'request': request})
+            return self.get_paginated_response(serializer.data)
+        serializer = ProductListSerializer(in_stock_products, many=True, context={'request': request})
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def out_of_stock(self, request):
+        """Get out-of-stock products"""
+        out_of_stock_products = self.get_queryset().filter(in_stock=False)
+        page = self.paginate_queryset(out_of_stock_products)
+        if page is not None:
+            serializer = ProductListSerializer(page, many=True, context={'request': request})
+            return self.get_paginated_response(serializer.data)
+        serializer = ProductListSerializer(out_of_stock_products, many=True, context={'request': request})
         return Response(serializer.data)
     
     @action(detail=True, methods=['get'])
@@ -146,6 +174,10 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         category_ids = queryset.values_list('category_id', flat=True).distinct()
         categories = Category.objects.filter(id__in=category_ids, is_active=True)
         
+        # Stock statistics
+        in_stock_count = queryset.filter(in_stock=True).count()
+        out_of_stock_count = queryset.filter(in_stock=False).count()
+        
         return Response({
             'price_range': {
                 'min': float(price_stats['min_price'] or 0),
@@ -160,6 +192,10 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
                 }
                 for cat in categories
             ],
+            'stock': {
+                'in_stock': in_stock_count,
+                'out_of_stock': out_of_stock_count
+            },
             'total_products': queryset.count()
         })
     
@@ -194,14 +230,17 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         # Add metadata
         queryset = self.filter_queryset(self.get_queryset())
         
-        response.data['metadata'] = {
-            'total_count': queryset.count(),
-            'filters_applied': {
-                'category': request.query_params.get('category'),
-                'search': request.query_params.get('search'),
-                'min_price': request.query_params.get('min_price'),
-                'max_price': request.query_params.get('max_price'),
-                'in_stock': request.query_params.get('in_stock'),
+        response.data = {
+            'results': response.data,
+            'metadata': {
+                'total_count': queryset.count(),
+                'filters_applied': {
+                    'category': request.query_params.get('category'),
+                    'search': request.query_params.get('search'),
+                    'min_price': request.query_params.get('min_price'),
+                    'max_price': request.query_params.get('max_price'),
+                    'in_stock': request.query_params.get('in_stock'),
+                }
             }
         }
         

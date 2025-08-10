@@ -35,7 +35,7 @@ class ProductListSerializer(serializers.ModelSerializer):
         model = Product
         fields = (
             'id', 'title', 'seller_code', 'price', 'primary_image', 
-            'category_name', 'seller_name', 'is_in_stock', 'is_low_stock',
+            'category_name', 'seller_name', 'in_stock',  # in_stock o'zgardi
             'is_featured', 'brand', 'created_at'
         )
     
@@ -56,7 +56,7 @@ class ProductListSerializer(serializers.ModelSerializer):
         return None
     
     def get_seller_name(self, obj):
-        return f"{obj.seller.first_name} {obj.seller.last_name}"
+        return f"{obj.seller.first_name} {obj.seller.last_name}".strip() or obj.seller.phone_number
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
@@ -74,14 +74,14 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'title', 'seller_code', 'description', 'price', 
             'category', 'seller_name', 'seller_phone',
-            'stock_quantity', 'is_in_stock', 'is_low_stock', 'min_stock_level',
+            'in_stock',  # Faqat in_stock qoldi
             'brand', 'weight', 'dimensions', 'color', 'material',
             'primary_image', 'all_images', 'images', 'specifications',
-            'is_featured', 'created_at', 'updated_at'
+            'is_featured', 'is_active', 'created_at', 'updated_at'
         )
     
     def get_seller_name(self, obj):
-        return f"{obj.seller.first_name} {obj.seller.last_name}"
+        return f"{obj.seller.first_name} {obj.seller.last_name}".strip() or obj.seller.phone_number
     
     def get_primary_image(self, obj):
         primary_image = obj.images.filter(is_primary=True).first()
@@ -90,6 +90,13 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             if request:
                 return request.build_absolute_uri(primary_image.image.url)
             return primary_image.image.url
+        # Fallback to first image
+        first_image = obj.images.first()
+        if first_image and first_image.image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(first_image.image.url)
+            return first_image.image.url
         return None
     
     def get_all_images(self, obj):
@@ -104,9 +111,9 @@ class ProductCreateUpdateSerializer(serializers.ModelSerializer):
         model = Product
         fields = (
             'title', 'seller_code', 'description', 'price', 'category',
-            'stock_quantity', 'min_stock_level', 'brand', 'weight',
-            'dimensions', 'color', 'material', 'meta_title', 'meta_description',
-            'is_featured'
+            'in_stock', 'brand', 'weight',  # in_stock o'zgardi
+            'dimensions', 'color', 'material',
+            'is_featured', 'is_active'
         )
     
     def create(self, validated_data):
