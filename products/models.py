@@ -11,6 +11,14 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
     seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name='products')
+    company = models.ForeignKey(
+        'companies.Company',
+        on_delete=models.CASCADE,
+        related_name='products',
+        null=True,
+        blank=True,
+        verbose_name="Kompaniya"
+    )
     
     # SODDA OMBOR - faqat bor yoki yo'q
     in_stock = models.BooleanField(default=True, verbose_name="Omborda bormi")

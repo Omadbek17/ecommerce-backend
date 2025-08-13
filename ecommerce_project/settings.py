@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'phonenumber_field',
     
     # Local apps
+    'companies',
     'accounts',
     'categories',
     'products',
